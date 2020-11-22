@@ -1,42 +1,35 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios'
-import Loader from './components/home/Loader'
+import Header from './components/home/Header'
+import HouseNames from './components/House/HouseNames'
 import './App.css';
 
 
 
 const App = () => {
 
-  const [qoutes, qoutessetQoutes] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const lyricsfunction =  async () => {
-
-    try {
-      // eslint-disable-next-line
-      const data = await axios
-        .get(`https://game-of-thrones-quotes.herokuapp.com/v1/random`)
-        .then(res => {
-          console.log(res);
-          qoutessetQoutes(res.data.qoutes);
-        });
-        setIsLoading(true);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-  
- 
+  const [items, setItems] = useState([]) //this will represent the items that will be coming from the API
+  const [isLoading, setLoading] = useState(true)
+   
   useEffect (() => {
-    lyricsfunction ();
-    }, []);
+    const getItems =  async () =>{
+      const result = await axios (
+        `https://www.anapioficeandfire.com/api/houses` //Endpoint and parameter or base Url
+        )
+      console.log(result.data)
 
-  return   (
-  <div className="App">
-   {qoutes}
-   {isLoading ? (qoutes) : ( <Loader/>)}
-   </div>);
+      setItems(result.data)//sets the data to appear 
+      setLoading(false) //stop loading when data is fetched
+    }
+    getItems()
 
-};
+  }, [])//when we use useEffect we put dependency as a second paramers
+
+  return  ( <div className="container">
+    <Header/>
+    <HouseNames isLoading ={isLoading} items = {items}/>
+  </div> )
+
+}
 
 export default App;
